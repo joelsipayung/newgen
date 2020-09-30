@@ -1,11 +1,7 @@
 pipeline {
-    environment {
-        registry = "joelsipayung/app-go-pip-helloworld"
-        registryCredential = 'joelsipayung'
-        dockerImage = ''
-    }
+    
     def app
-    agent any
+
     stages { 
         stage('Cloning our Git') {
             steps {
@@ -15,14 +11,14 @@ pipeline {
         stage('Building our image') {
             steps {
                 script {
-                    app = docker.build ("registry :${env.BUILD_NUMBER}")
+                    app = docker.build ("joelsipayung/app-go-pip-helloworld :${env.BUILD_NUMBER}")
                 }
             }
         }
         stage('Deploy our image') {
             steps {
                 script {
-                    docker.withRegistry( 'https://hub.docker.com', registryCredential ) {
+                    docker.withRegistry( 'https://hub.docker.com', joelsipayung ) {
                         app.push()
                     }
                 }
@@ -30,7 +26,7 @@ pipeline {
         }
         stage('Cleaning up') {
             steps { 
-                sh "docker rmi $registry:$BUILD_NUMBER"
+                sh "docker rmi $joelsipayung/app-go-pip-helloworld:$BUILD_NUMBER"
             }
         }
     }
