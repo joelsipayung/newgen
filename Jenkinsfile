@@ -18,7 +18,7 @@ node {
         stage('Deploy our image') {
             steps {
                 script {
-                    docker.withRegistry( 'https://hub.docker.com', joelsipayung ) {
+                    docker.withRegistry( 'https://registry.hub.docker.com', 'joelsipayung' ) {
                         app.push()
                     }
                 }
