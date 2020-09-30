@@ -4,6 +4,7 @@ pipeline {
         registryCredential = 'joelsipayung'
         dockerImage = ''
     }
+    def app
     agent any
     stages { 
         stage('Cloning our Git') {
@@ -14,7 +15,7 @@ pipeline {
         stage('Building our image') {
             steps {
                 script {
-                    dockerImage = docker.build ("registry :${env.BUILD_NUMBER}")
+                    app = docker.build ("registry :${env.BUILD_NUMBER}")
                 }
             }
         }
@@ -22,7 +23,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry( 'https://hub.docker.com', registryCredential ) {
-                        dockerImage.push()
+                        app.push()
                     }
                 }
             }
