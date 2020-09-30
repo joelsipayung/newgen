@@ -1,42 +1,33 @@
-pipeline {
-  environment {
-    registry = "gjoelsipayung/appku-golang-helloworldexample"
-    registryCredential = 'joelsipayung'
-    dockerImage = ''
-  }
-  agent any
+node {
+    def app
 
-  stages {
-    stage('Cloning Git') {
-      steps {
-        git 'https://github.com/joelsipayung/newgen'
-      }
+    stage('Clone repository') {
+        /* Cloning the Repository to our Workspace */
+
+        checkout scm
     }
-    stage('Test') {
-      steps {
-        sh 'echo sukses test'
-      }
+
+    stage('Build image') {
+        /* This builds the actual image */
+
+        app = docker.build("joelsipayung/nodapp-go-helloworldexampleeapp")
     }
-    stage('Building image') {
-      steps{
-        script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+
+    stage('Test image') {
+        
+        app.inside {
+            echo "Tests passed"
         }
-      }
     }
-    stage('Deploy Image') {
-      steps{
-         script {
-            docker.withRegistry( '', registryCredential ) {
-            dockerImage.push()
-          }
-        }
-      }
+
+    stage('Push image') {
+        /* 
+			You would need to first register with DockerHub before you can push images to your account
+		*/
+        docker.withRegistry('https://registry.hub.docker.com', 'joelsipayung') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
+            } 
+                echo "Trying to Push Docker Build to DockerHub"
     }
-    stage('Remove Unused docker image') {
-      steps{
-        sh "docker rmi $registry:$BUILD_NUMBER"
-      }
-    }
-  }
 }
