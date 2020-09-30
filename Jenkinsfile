@@ -14,14 +14,14 @@ pipeline {
         stage('Building our image') {
             steps {
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    dockerImage = docker.build ("registry :${env.BUILD_NUMBER}")
                 }
             }
         }
         stage('Deploy our image') {
             steps {
                 script {
-                    docker.withRegistry( '', registryCredential ) {
+                    docker.withRegistry( 'https://hub.docker.com', registryCredential ) {
                         dockerImage.push()
                     }
                 }
