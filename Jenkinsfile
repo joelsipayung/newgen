@@ -2,28 +2,25 @@ node {
     def app
 
     stage('Clone repository') {
-        /* Cloning the Repository to our Workspace */
-
+        /* untuk mengclon githubnya */
         checkout scm
     }
 
     stage('Build image') {
-        /* This builds the actual image */
+        /* 7untuk build image */
 
         app = docker.build("joelsipayung/nodapp-go-helloworldexampleeapp")
     }
 
     stage('Test image') {
-        
+        /* test step nya aja */
         app.inside {
             echo "Tests passed"
         }
     }
 
     stage('Push image') {
-        /* 
-			You would need to first register with DockerHub before you can push images to your account
-		*/
+        /* push ke docker hub	*/
         docker.withRegistry('https://registry.hub.docker.com', 'joelsipayung') {
             app.push("${env.BUILD_NUMBER}")
             app.push("latest")
